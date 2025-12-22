@@ -1,0 +1,81 @@
+{
+  "version": "1.0.0",
+  "description": "Common parameters shared across vLLM, SGLang, and other inference engines",
+  "mappings": {
+    "model": {
+      "json_path": "model",
+      "cli_flag": "--model",
+      "type": "string",
+      "required": true,
+      "description": "Model identifier (HuggingFace model name or local path)"
+    },
+    "host": {
+      "json_path": "host",
+      "cli_flag": "--host",
+      "type": "string",
+      "required": false,
+      "default": "0.0.0.0",
+      "description": "Network interface to bind to"
+    },
+    "port": {
+      "json_path": "port",
+      "cli_flag": "--port",
+      "type": "int",
+      "required": false,
+      "description": "Port to expose the service on"
+    },
+    "quantization": {
+      "json_path": "quantization",
+      "cli_flag": "--quantization",
+      "type": "string",
+      "required": false,
+      "description": "Quantization method (e.g., 'awq', 'gptq', 'fp8')"
+    },
+    "load_format": {
+      "json_path": "load_format",
+      "cli_flag": "--load-format",
+      "type": "string",
+      "required": false,
+      "description": "Model loading format (e.g., 'auto', 'pt', 'safetensors', 'runai_streamer')"
+    },
+    "model_loader_extra_config": {
+      "json_path": "model_loader_extra_config",
+      "cli_flag": "--model-loader-extra-config",
+      "type": "json_object",
+      "required": false,
+      "description": "Additional model loader configuration as JSON string",
+      "transform": "json_marshal",
+      "notes": "This field is marshaled to a JSON string and passed as a single argument"
+    },
+    "trust_remote_code": {
+      "json_path": "trust_remote_code",
+      "cli_flag": "--trust-remote-code",
+      "type": "bool_flag",
+      "required": false,
+      "description": "Trust remote code from HuggingFace",
+      "notes": "Only include flag if value is true"
+    },
+    "seed": {
+      "json_path": "seed",
+      "cli_flag": {
+        "vllm": "--seed",
+        "sglang": "--random-seed"
+      },
+      "type": "int",
+      "required": false,
+      "description": "Random seed for reproducibility",
+      "notes": "Flag name varies by engine"
+    },
+    "tokenizer": {
+      "json_path": "tokenizer",
+      "cli_flag": {
+        "vllm": "--tokenizer",
+        "sglang": "--tokenizer-path"
+      },
+      "type": "string",
+      "required": false,
+      "description": "Tokenizer to use (HuggingFace tokenizer name or local path)",
+      "notes": "Flag name varies by engine"
+    }
+  }
+}

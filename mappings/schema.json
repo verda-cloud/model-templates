@@ -1,0 +1,109 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Model Template Mapping Schema",
+  "description": "JSON Schema for model template parameter mapping files",
+  "type": "object",
+  "required": ["version", "mappings"],
+  "properties": {
+    "version": {
+      "type": "string",
+      "description": "Version of the mapping schema",
+      "pattern": "^\\d+\\.\\d+\\.\\d+$"
+    },
+    "engine": {
+      "type": "string",
+      "description": "Engine identifier (vllm, sglang, custom, common)",
+      "enum": ["vllm", "sglang", "custom", "common"]
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description of this mapping file"
+    },
+    "base_command": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Base command to execute for this engine"
+    },
+    "mappings": {
+      "type": "object",
+      "description": "Parameter mappings from JSON paths to CLI flags",
+      "additionalProperties": {
+        "$ref": "#/definitions/mapping_entry"
+      }
+    }
+  },
+  "definitions": {
+    "mapping_entry": {
+      "type": "object",
+      "required": ["json_path", "cli_flag", "type"],
+      "properties": {
+        "json_path": {
+          "type": "string",
+          "description": "Dot-notation path in the JSON config (e.g., 'vllm.tensor_parallel_size')"
+        },
+        "cli_flag": {
+          "oneOf": [
+            {
+              "type": "string",
+              "description": "CLI flag for this parameter (e.g., '--tensor-parallel-size')"
+            },
+            {
+              "type": "object",
+              "description": "Engine-specific CLI flags",
+              "additionalProperties": {
+                "type": "string"
+              }
+            }
+          ]
+        },
+        "type": {
+          "type": "string",
+          "enum": [
+            "string",
+            "int",
+            "float",
+            "bool",
+            "bool_flag",
+            "json_object",
+            "array_of_strings",
+            "object"
+          ],
+          "description": "Data type of the parameter"
+        },
+        "format": {
+          "type": "string",
+          "description": "Format string for numeric types (e.g., '%.2f' for floats)"
+        },
+        "required": {
+          "type": "boolean",
+          "description": "Whether this parameter is required"
+        },
+        "default": {
+          "description": "Default value if not specified"
+        },
+        "description": {
+          "type": "string",
+          "description": "Human-readable description of the parameter"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Additional notes about the parameter"
+        },
+        "transform": {
+          "type": "string",
+          "enum": ["json_marshal"],
+          "description": "Special transformation to apply to the value"
+        },
+        "example": {
+          "description": "Example value for this parameter"
+        },
+        "validation": {
+          "type": "string",
+          "description": "Validation rules for this parameter"
+        }
+      }
+    }
+  }
+}
