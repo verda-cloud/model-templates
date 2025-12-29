@@ -1,0 +1,155 @@
+{
+  "version": "1.0.0",
+  "engine": "sglang",
+  "description": "SGLang-specific parameter mappings for inference engine configuration",
+  "base_command": ["python3", "-m", "sglang.launch_server"],
+  "mappings": {
+    "sglang.tp": {
+      "json_path": "sglang.tp",
+      "cli_flag": "--tp",
+      "type": "int",
+      "required": false,
+      "description": "Tensor parallelism degree (number of GPUs for tensor parallel)"
+    },
+    "sglang.dp": {
+      "json_path": "sglang.dp",
+      "cli_flag": "--dp",
+      "type": "int",
+      "required": false,
+      "description": "Data parallelism degree"
+    },
+    "sglang.ep": {
+      "json_path": "sglang.ep",
+      "cli_flag": "--ep",
+      "type": "int",
+      "required": false,
+      "description": "Expert parallelism degree (for MoE models)"
+    },
+    "sglang.pipeline_parallel_size": {
+      "json_path": "sglang.pipeline_parallel_size",
+      "cli_flag": "--pp",
+      "type": "int",
+      "required": false,
+      "description": "Pipeline parallelism degree"
+    },
+    "sglang.mem_fraction_static": {
+      "json_path": "sglang.mem_fraction_static",
+      "cli_flag": "--mem_fraction_static",
+      "type": "float",
+      "required": false,
+      "description": "Fraction of GPU memory to use for KV cache (0.0 to 1.0)"
+    },
+    "sglang.kv_cache_dtype": {
+      "json_path": "sglang.kv_cache_dtype",
+      "cli_flag": "--kv_cache_type",
+      "type": "string",
+      "required": false,
+      "description": "Data type for KV cache (e.g., 'auto', 'fp8', 'fp16')"
+    },
+    "sglang.context_length": {
+      "json_path": "sglang.context_length",
+      "cli_flag": "--context_length",
+      "type": "int",
+      "required": false,
+      "description": "Maximum context length (sequence length) for the model"
+    },
+    "sglang.max_running_requests": {
+      "json_path": "sglang.max_running_requests",
+      "cli_flag": "--max_running_requests",
+      "type": "int",
+      "required": false,
+      "description": "Maximum number of concurrent running requests"
+    },
+    "sglang.enable_dp_attention": {
+      "json_path": "sglang.enable_dp_attention",
+      "cli_flag": "--enable-dp-attention",
+      "type": "bool_flag",
+      "required": false,
+      "description": "Enable data parallel attention optimization"
+    },
+    "sglang.disable_shared_experts_fusion": {
+      "json_path": "sglang.disable_shared_experts_fusion",
+      "cli_flag": "--disable-shared-experts-fusion",
+      "type": "bool_flag",
+      "required": false,
+      "description": "Disable shared experts fusion optimization for MoE models"
+    },
+    "sglang.disable_radix_cache": {
+      "json_path": "sglang.disable_radix_cache",
+      "cli_flag": "--disable-radix-cache",
+      "type": "bool_flag",
+      "required": false,
+      "description": "Disable radix cache (prefix caching mechanism)"
+    },
+    "sglang.disable_cuda_graph": {
+      "json_path": "sglang.disable_cuda_graph",
+      "cli_flag": "--disable-cuda-graph",
+      "type": "bool_flag",
+      "required": false,
+      "description": "Disable CUDA graph optimization"
+    },
+    "sglang.reasoning_parser": {
+      "json_path": "sglang.reasoning_parser",
+      "cli_flag": "--reasoning_parser",
+      "type": "string",
+      "required": false,
+      "description": "Reasoning parser to use for structured outputs"
+    },
+    "sglang.tool_call_parser": {
+      "json_path": "sglang.tool_call_parser",
+      "cli_flag": "--tool_call_parser",
+      "type": "string",
+      "required": false,
+      "description": "Tool call parser for function calling capabilities"
+    },
+    "sglang.chat_template": {
+      "json_path": "sglang.chat_template",
+      "cli_flag": "--chat_template",
+      "type": "string",
+      "required": false,
+      "description": "Chat template to use for conversation formatting"
+    },
+    "sglang.speculative_algorithm": {
+      "json_path": "sglang.speculative_algorithm",
+      "cli_flag": "--speculative_algorithm",
+      "type": "string",
+      "required": false,
+      "description": "Speculative decoding algorithm (e.g., 'eagle', 'medusa')"
+    },
+    "sglang.speculative_num_steps": {
+      "json_path": "sglang.speculative_num_steps",
+      "cli_flag": "--speculative_steps",
+      "type": "int",
+      "required": false,
+      "description": "Number of speculative decoding steps"
+    },
+    "sglang.speculative_eagle_topk": {
+      "json_path": "sglang.speculative_eagle_topk",
+      "cli_flag": "--speculative_ep",
+      "type": "int",
+      "required": false,
+      "description": "Top-k parameter for EAGLE speculative decoding"
+    },
+    "sglang.speculative_num_draft_tokens": {
+      "json_path": "sglang.speculative_num_draft_tokens",
+      "cli_flag": "--speculative-num-draft-tokens",
+      "type": "int",
+      "required": false,
+      "description": "Number of draft tokens for speculative decoding"
+    },
+    "sglang.speculative_draft_model_path": {
+      "json_path": "sglang.speculative_draft_model_path",
+      "cli_flag": "--speculative-draft-model-path",
+      "type": "string",
+      "required": false,
+      "description": "Path to draft model for speculative decoding"
+    },
+    "sglang.schedule_policy": {
+      "json_path": "sglang.schedule_policy",
+      "cli_flag": "--schedule-policy",
+      "type": "string",
+      "required": false,
+      "description": "Request scheduling policy (e.g., 'lpm', 'random', 'fcfs')"
+    }
+  }
+}

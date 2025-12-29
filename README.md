@@ -14,6 +14,8 @@ These templates are also used by Verda command line client (TODO: add link when 
 Structured JSON with common fields at the top level and engine-specific options nested. More
 information about the configuration format is available in a separate [spec file](SPEC.md).
 
+The JSON-to-CLI parameter mappings are defined in the [`mappings/`](mappings/) directory.
+
 
 ## Acknowledgements
 

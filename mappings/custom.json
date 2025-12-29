@@ -1,0 +1,82 @@
+{
+  "version": "1.0.0",
+  "engine": "custom",
+  "description": "Custom engine configuration for user-defined inference engines",
+  "notes": "Custom engines provide flexibility to use any inference framework by specifying the base command and arguments",
+  "structure": {
+    "base_command": {
+      "json_path": "custom.base_command",
+      "type": "string",
+      "required": true,
+      "description": "The base command to execute (e.g., 'python -m my_inference_engine.serve')"
+    },
+    "model_flag": {
+      "json_path": "custom.model_flag",
+      "type": "string",
+      "required": false,
+      "default": "--model",
+      "description": "The CLI flag to use for specifying the model path"
+    },
+    "image": {
+      "json_path": "custom.image",
+      "type": "string",
+      "required": false,
+      "description": "Container image to use (must include tag or have image_tag defined separately)",
+      "validation": "Must either include ':tag' or have 'image_tag' field defined"
+    },
+    "args": {
+      "json_path": "custom.args",
+      "type": "array_of_strings",
+      "required": false,
+      "description": "List of additional CLI arguments to pass to the command",
+      "example": ["--workers 4", "--batch-size 32"]
+    },
+    "kv_args": {
+      "json_path": "custom.kv_args",
+      "type": "object",
+      "required": false,
+      "description": "Key-value pairs to pass as CLI arguments",
+      "example": {
+        "--timeout": 60,
+        "--max-tokens": 2048,
+        "--temperature": 0.7
+      },
+      "notes": "Each key-value pair is converted to 'key value' CLI arguments"
+    }
+  },
+  "command_generation_order": [
+    "base_command",
+    "model (with model_flag)",
+    "args (in order)",
+    "kv_args (key-value pairs)"
+  ],
+  "example_json": {
+    "engine": "custom",
+    "model": "my-org/my-model",
+    "custom": {
+      "base_command": "python -m my_inference_engine.serve",
+      "model_flag": "--model-path",
+      "args": [
+        "--workers 4",
+        "--batch-size 32"
+      ],
+      "kv_args": {
+        "--timeout": 60,
+        "--max-tokens": 2048
+      }
+    }
+  },
+  "example_command": [
+    "python",
+    "-m",
+    "my_inference_engine.serve",
+    "--model-path",
+    "my-org/my-model",
+    "--workers 4",
+    "--batch-size 32",
+    "--timeout",
+    "60",
+    "--max-tokens",
+    "2048"
+  ]
+}

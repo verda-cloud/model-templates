@@ -1,0 +1,115 @@
+{
+  "version": "1.0.0",
+  "engine": "vllm",
+  "description": "vLLM-specific parameter mappings for inference engine configuration",
+  "base_command": [""],
+  "base_command_note": "vLLM container runs the base command by default, so we use empty string",
+  "mappings": {
+    "vllm.tensor_parallel_size": {
+      "json_path": "vllm.tensor_parallel_size",
+      "cli_flag": "--tensor-parallel-size",
+      "type": "int",
+      "required": false,
+      "description": "Number of tensor parallel replicas (for multi-GPU inference)"
+    },
+    "vllm.pipeline_parallel_size": {
+      "json_path": "vllm.pipeline_parallel_size",
+      "cli_flag": "--pipeline-parallel-size",
+      "type": "int",
+      "required": false,
+      "description": "Number of pipeline parallel stages"
+    },
+    "vllm.data_parallel_size": {
+      "json_path": "vllm.data_parallel_size",
+      "cli_flag": "--data-parallel-size",
+      "type": "int",
+      "required": false,
+      "description": "Number of data parallel replicas"
+    },
+    "vllm.dtype": {
+      "json_path": "vllm.dtype",
+      "cli_flag": "--dtype",
+      "type": "string",
+      "required": false,
+      "description": "Data type for model weights and activations (e.g., 'auto', 'float16', 'bfloat16', 'float32')"
+    },
+    "vllm.max_model_len": {
+      "json_path": "vllm.max_model_len",
+      "cli_flag": "--max-model-len",
+      "type": "int",
+      "required": false,
+      "description": "Maximum sequence length (context window) for the model"
+    },
+    "vllm.gpu_memory_utilization": {
+      "json_path": "vllm.gpu_memory_utilization",
+      "cli_flag": "--gpu-memory-utilization",
+      "type": "float",
+      "format": "%.2f",
+      "required": false,
+      "description": "Fraction of GPU memory to use for model execution (0.0 to 1.0)"
+    },
+    "vllm.max_num_seqs": {
+      "json_path": "vllm.max_num_seqs",
+      "cli_flag": "--max-num-seqs",
+      "type": "int",
+      "required": false,
+      "description": "Maximum number of sequences to process in a single batch"
+    },
+    "vllm.max_num_batched_tokens": {
+      "json_path": "vllm.max_num_batched_tokens",
+      "cli_flag": "--max-num-batched-tokens",
+      "type": "int",
+      "required": false,
+      "description": "Maximum number of tokens to batch together"
+    },
+    "vllm.swap_space": {
+      "json_path": "vllm.swap_space",
+      "cli_flag": "--swap-space",
+      "type": "int",
+      "required": false,
+      "description": "CPU swap space size in GiB for offloading"
+    },
+    "vllm.enable_prefix_caching": {
+      "json_path": "vllm.enable_prefix_caching",
+      "cli_flag": "--enable-prefix-caching",
+      "type": "bool_flag",
+      "required": false,
+      "description": "Enable automatic prefix caching for improved performance with repeated prompts"
+    },
+    "vllm.enable_chunked_prefill": {
+      "json_path": "vllm.enable_chunked_prefill",
+      "cli_flag": "--enable-chunked-prefill",
+      "type": "bool_flag",
+      "required": false,
+      "description": "Enable chunked prefill for better latency with long prompts"
+    },
+    "vllm.enforce_eager": {
+      "json_path": "vllm.enforce_eager",
+      "cli_flag": "--enforce-eager",
+      "type": "bool_flag",
+      "required": false,
+      "description": "Enforce eager execution mode (disable CUDA graphs)"
+    },
+    "vllm.served_model_name": {
+      "json_path": "vllm.served_model_name",
+      "cli_flag": "--served-model-name",
+      "type": "string",
+      "required": false,
+      "description": "Model name to use in API responses (defaults to model path)"
+    },
+    "vllm.distributed_executor_backend": {
+      "json_path": "vllm.distributed_executor_backend",
+      "cli_flag": "--distributed-executor-backend",
+      "type": "string",
+      "required": false,
+      "description": "Backend for distributed execution (e.g., 'ray', 'mp')"
+    },
+    "vllm.scheduling_policy": {
+      "json_path": "vllm.scheduling_policy",
+      "cli_flag": "--scheduling-policy",
+      "type": "string",
+      "required": false,
+      "description": "Scheduling policy for batch processing (e.g., 'fcfs', 'priority')"
+    }
+  }
+}
