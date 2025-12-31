@@ -156,6 +156,42 @@ func parseEnvVars(envVars []string) ([]verda.ContainerEnvVar, error) {
 	return envList, nil
 }
 
+// getAvailableGPUTypes fetches available serverless compute resources from the Verda API
+// Returns a map of GPU types to their available sizes (GPU counts)
+func getAvailableGPUTypes(ctx context.Context, client *verda.Client) (map[string]map[int]bool, error) {
+	// Get all serverless compute resources using the /serverless-compute-resources endpoint
+	computeResources, err := client.ContainerDeployments.GetServerlessComputeResources(ctx)
+	if err != nil {
+		return nil, fmt.Errorf("failed to fetch serverless compute resources: %w", err)
+	}
+
+	availableTypes := make(map[string]map[int]bool)
+	for _, resource := range computeResources {
+		if resource.IsAvailable {
+			gpuType := strings.ToUpper(resource.Name)
+
+			if availableTypes[gpuType] == nil {
+				availableTypes[gpuType] = make(map[int]bool)
+			}
+			availableTypes[gpuType][resource.Size] = true
+		}
+	}
+
+	return availableTypes, nil
+}
+
+func selectBestAvailableGPU(preferredGPUs []template.GPUType, availableGPUs map[string]map[int]bool, requiredCount int) string {
+	for _, gpuType := range preferredGPUs {
+		gpuUpper := strings.ToUpper(string(gpuType))
+		if sizes, exists := availableGPUs[gpuUpper]; exists {
+			if sizes[requiredCount] {
+				return gpuUpper
+			}
+		}
+	}
+	return ""
+}
+
 func deployTemplate(ctx context.Context, client *verda.Client, filePath string) error {
 	data, err := os.ReadFile(filePath)
 	if err != nil {
@@ -187,15 +223,7 @@ func deployTemplate(ctx context.Context, client *verda.Client, filePath string) 
 		name = strings.ReplaceAll(name, "_", "-")
 	}
 
-	gpuType := gpuTypeOverride
-	if gpuType == "" && len(cfg.GPUTypes) > 0 {
-		// Use last GPU type from template for now
-		gpuType = strings.ToUpper(string(cfg.GPUTypes[len(cfg.GPUTypes)-1]))
-	}
-	if gpuType == "" {
-		return fmt.Errorf("no GPU type specified and template doesn't specify gpu_types")
-	}
-
+	// Determine GPU count first (needed for availability checking)
 	gpuCount := gpuCountOverride
 	if gpuCount == 0 {
 		// Try to infer from template parallelism settings
@@ -206,6 +234,36 @@ func deployTemplate(ctx context.Context, client *verda.Client, filePath string) 
 		} else {
 			gpuCount = 1
 		}
+	}
+
+	// Select GPU type based on availability and template preferences
+	gpuType := gpuTypeOverride
+	if gpuType == "" && len(cfg.GPUTypes) > 0 {
+		if !dryRun && client != nil {
+			availableGPUs, err := getAvailableGPUTypes(ctx, client)
+			if err != nil {
+				fmt.Printf("Warning: Could not fetch GPU availability: %v\n", err)
+				fmt.Printf("Warning: Falling back to template default GPU type\n")
+				gpuType = strings.ToUpper(string(cfg.GPUTypes[len(cfg.GPUTypes)-1]))
+			} else {
+				gpuType = selectBestAvailableGPU(cfg.GPUTypes, availableGPUs, gpuCount)
+				if gpuType == "" {
+					// No preferred GPU is available with the required count
+					preferredList := make([]string, len(cfg.GPUTypes))
+					for i, gpu := range cfg.GPUTypes {
+						preferredList[i] = strings.ToUpper(string(gpu))
+					}
+					return fmt.Errorf("none of the template's preferred GPU types are available with %dx count: %v", gpuCount, preferredList)
+				}
+				fmt.Printf("  Selected GPU based on availability: %dx %s\n", gpuCount, gpuType)
+			}
+		} else {
+			// Dry-run mode or no client: use last GPU type from template
+			gpuType = strings.ToUpper(string(cfg.GPUTypes[len(cfg.GPUTypes)-1]))
+		}
+	}
+	if gpuType == "" {
+		return fmt.Errorf("no GPU type specified and template doesn't specify gpu_types")
 	}
 
 	image := containerImage

@@ -42,7 +42,12 @@ func (b *CommandBuilder) Build(config template.Config) ([]string, error) {
 		parts = append(parts, b.engineMapping.BaseCommand...)
 	}
 
-	// Special case, always first after base command
+	if config.Host != nil && *config.Host != "" {
+		parts = append(parts, "--host", *config.Host)
+	}
+	if config.Port != nil {
+		parts = append(parts, "--port", fmt.Sprint(*config.Port))
+	}
 	if config.Model != "" {
 		parts = append(parts, "--model", config.Model)
 	}
