@@ -12,8 +12,8 @@
 *.test
 
 # Command binaries
-./deploy
-./validate
+/deploy
+/validate
 
 # Code coverage profiles and other test artifacts
 *.out

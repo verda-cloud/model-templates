@@ -2,7 +2,7 @@
   "version": "1.0.0",
   "engine": "vllm",
   "description": "vLLM-specific parameter mappings for inference engine configuration",
-  "base_command": [""],
+  "base_command": [],
   "base_command_note": "vLLM container runs the base command by default, so we use empty string",
   "mappings": {
     "vllm.tensor_parallel_size": {
