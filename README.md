@@ -16,6 +16,12 @@ information about the configuration format is available in a separate [spec file
 
 The JSON-to-CLI parameter mappings are defined in the [`mappings/`](mappings/) directory.
 
+## ⚠️ Disclaimer
+
+The templates in the [`templates/`](templates/) directory have **not been fully verified**. While they are based on recommended configurations from various sources, they may require adjustments for your specific hardware, software versions, or use cases. Please test and debug serverless deployments thoroughly.
+
+Take a look at [DEV_WORKFLOW.md](./DEV_WORKFLOW.md) for a way to test templates on a GPU instance before deploying to a Serverless Container.
+
 
 ## Acknowledgements
 
@@ -25,8 +31,16 @@ This project was inspired by and partially uses model data from:
 
 ## Resources
 
+### LLM
+
 - **SGLang**: https://github.com/sgl-project/sglang
 - **vLLM**: https://github.com/vllm-project/vllm
 - **SGL Cookbook**: https://github.com/sgl-project/sgl-cookbook
 - **InferenceMAX**: https://inferencemax.ai
-- 
+
+### Verda
+
+- **Containers Docs**: https://docs.verda.com/containers/overview
+- **API Docs**: https://docs.verda.com
+- **GO SDK**: https://github.com/verda-cloud/verdacloud-sdk-go
+- **Python SDK**: https://github.com/verda-cloud/sdk-python
