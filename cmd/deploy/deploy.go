@@ -43,9 +43,10 @@ var (
 	maxReplicas int
 
 	// Additional flags
-	envVars []string
-	dryRun  bool
-	timeout int
+	envVars    []string
+	dryRun     bool
+	timeout    int
+	updateMode bool
 )
 
 var rootCmd = &cobra.Command{
@@ -77,6 +78,7 @@ func init() {
 	rootCmd.Flags().StringArrayVarP(&envVars, "env", "e", []string{}, "Environment variables for container (format: KEY=VALUE, can be specified multiple times)")
 	rootCmd.Flags().BoolVar(&dryRun, "dry-run", false, "Validate and show deployment plan without deploying")
 	rootCmd.Flags().IntVar(&timeout, "timeout", 300, "Deployment timeout in seconds")
+	rootCmd.Flags().BoolVar(&updateMode, "update", false, "Update existing deployment instead of creating new")
 }
 
 func main() {
@@ -238,6 +240,15 @@ func deployTemplate(ctx context.Context, client *verda.Client, filePath string) 
 
 	// Select GPU type based on availability and template preferences
 	gpuType := gpuTypeOverride
+	// availableGPUs, err := getAvailableGPUTypes(ctx, client)
+	// if err != nil {
+	// 	return fmt.Errorf("failed to fetch available GPU types: %v", err)
+	// } else {
+	// 	fmt.Println("Available GPUs:")
+	// 	for gpuType, sizes := range availableGPUs {
+	// 		fmt.Printf("  - %s: %v\n", gpuType, sizes)
+	// 	}
+	// }
 	if gpuType == "" && len(cfg.GPUTypes) > 0 {
 		if !dryRun && client != nil {
 			availableGPUs, err := getAvailableGPUTypes(ctx, client)
@@ -306,13 +317,22 @@ func deployTemplate(ctx context.Context, client *verda.Client, filePath string) 
 		return fmt.Errorf("failed to parse environment variables: %v", err)
 	}
 
-	fmt.Printf("Deploying %s...\n", filepath.Base(filePath))
+	if updateMode {
+		fmt.Printf("Updating %s...\n", filepath.Base(filePath))
+	} else {
+		fmt.Printf("Deploying %s...\n", filepath.Base(filePath))
+	}
 	fmt.Printf("  Model: %s\n", cfg.Model)
 	fmt.Printf("  Engine: %s\n", cfg.Engine)
 	fmt.Printf("  GPU: %dx %s\n", gpuCount, gpuType)
 	fmt.Printf("  Deployment Name: %s\n", name)
 	if len(envList) > 0 {
 		fmt.Printf("  Environment Variables: %d set\n", len(envList))
+	}
+
+	// Handle update mode
+	if updateMode {
+		return updateDeployment(ctx, client, name, image, gpuType, gpuCount, envList, command)
 	}
 
 	createReq := verda.CreateDeploymentRequest{
@@ -373,6 +393,73 @@ func deployTemplate(ctx context.Context, client *verda.Client, filePath string) 
 	fmt.Printf("  Deployment Name: %s\n", deployment.Name)
 	fmt.Printf("  Endpoint: %s\n", deployment.EndpointBaseURL)
 	fmt.Printf("  Created At: %s\n", deployment.CreatedAt.Format(time.RFC3339))
+	fmt.Println()
+
+	return nil
+}
+
+// updateDeployment handles updating an existing deployment
+func updateDeployment(ctx context.Context, client *verda.Client, name, image, gpuType string, gpuCount int, envList []verda.ContainerEnvVar, command []string) error {
+	// Container name for serverless deployments is always {deploymentname}-0
+	containerName := fmt.Sprintf("%s-0", name)
+
+	updateReq := &verda.UpdateDeploymentRequest{
+		IsSpot: &isSpot,
+		Compute: &verda.ContainerCompute{
+			Name: gpuType,
+			Size: gpuCount,
+		},
+		ContainerRegistrySettings: &verda.ContainerRegistrySettings{
+			IsPrivate: false,
+		},
+		Scaling: &verda.ContainerScalingOptions{
+			MinReplicaCount:              minReplicas,
+			MaxReplicaCount:              maxReplicas,
+			ScaleDownPolicy:              &verda.ScalingPolicy{DelaySeconds: 300},
+			ScaleUpPolicy:                &verda.ScalingPolicy{DelaySeconds: 300},
+			QueueMessageTTLSeconds:       1,
+			ConcurrentRequestsPerReplica: 1,
+			ScalingTriggers: &verda.ScalingTriggers{
+				QueueLoad: &verda.QueueLoadTrigger{Threshold: 2},
+			},
+		},
+		Containers: []verda.CreateDeploymentContainer{
+			{
+				Name:        containerName,
+				Image:       image,
+				ExposedPort: exposedPort,
+				Healthcheck: &verda.ContainerHealthcheck{
+					Enabled: true,
+					Port:    exposedPort,
+					Path:    "/health",
+				},
+				Env: envList,
+				EntrypointOverrides: &verda.ContainerEntrypointOverrides{
+					Enabled: true,
+					Cmd:     command,
+				},
+			},
+		},
+	}
+
+	if dryRun {
+		jsonText, err := json.MarshalIndent(updateReq, "", "  ")
+		if err != nil {
+			return fmt.Errorf("failed to marshal update deployment request: %v", err)
+		}
+		fmt.Printf("  DRY RUN! Would update deployment %s, but nah\nBody:\n\n%s\n", name, jsonText)
+		os.Exit(0)
+	}
+
+	// Update the deployment using the SDK
+	deployment, err := client.ContainerDeployments.UpdateDeployment(ctx, name, updateReq)
+	if err != nil {
+		return fmt.Errorf("failed to update deployment: %v", err)
+	}
+
+	fmt.Printf("✓ Updated successfully\n")
+	fmt.Printf("  Deployment Name: %s\n", deployment.Name)
+	fmt.Printf("  Endpoint: %s\n", deployment.EndpointBaseURL)
 	fmt.Println()
 
 	return nil
