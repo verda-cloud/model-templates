@@ -30,6 +30,7 @@ const (
 type Config struct {
 	Engine           EngineOption `json:"engine"`
 	Model            string       `json:"model"`
+	Name             string       `json:"name,omitempty"`
 	Explanation      string       `json:"explanation,omitempty"`
 	ShortExplanation string       `json:"short_explanation,omitempty"`
 

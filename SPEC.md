@@ -46,6 +46,11 @@ The model identifier or path to load.
 - **Format:** HuggingFace path (e.g., `"meta-llama/Llama-3.1-70B-Instruct"`) or local path
 - **Example:** `"model": "deepseek-ai/DeepSeek-V3.2"`
 
+#### `name` (string, optional)
+Human-readable display title for the template. Used as the selection label when rendering a list of templates for users to choose from.
+- **Use case:** Short, scannable title shown in template pickers and UI
+- **Example:** `"name": "DeepSeek R1 · SGLang · FP8"`
+
 #### `explanation` (string, optional)
 Detailed explanation of the configuration's purpose, use case, and key features.
 - **Use case:** Document the configuration for reference and understanding

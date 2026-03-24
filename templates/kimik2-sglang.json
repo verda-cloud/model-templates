@@ -1,6 +1,7 @@
 {
   "engine": "sglang",
   "model": "moonshotai/Kimi-K2-Instruct",
+  "name": "Kimi K2 Instruct · SGLang",
   "explanation": "Kimi-K2-Instruct with expert and data parallelism. This model supports tool calling but not reasoning parsing.",
   "short_explanation": "Kimi-K2-Instruct with EP and DP for high throughput",
   "gpu_types": ["h200", "b200"],
