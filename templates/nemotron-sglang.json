@@ -5,6 +5,7 @@
   "short_explanation": "Nemotron 3 Nano 30B FP8 with reasoning and tools",
   "trust_remote_code": true,
   "gpu_types": ["h200", "b200"],
+  "model_mode": "thinking",
   "model_loader_extra_config": {
     "enable_multithread_load": true,
     "num_threads": 8

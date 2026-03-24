@@ -5,6 +5,7 @@
   "short_explanation": "GPT-OSS 120B FP4 on 4xB200 Blackwell optimized",
   "quantization": "fp4",
   "gpu_types": ["b200"],
+  "model_mode": "thinking",
   "load_format": "auto",
   "model_loader_extra_config": {
     "enable_multithread_load": true,
@@ -19,6 +20,7 @@
     "enable_prefix_caching": true,
     "enable_chunked_prefill": true,
     "max_num_batched_tokens": 8192,
-    "scheduling_policy": "fcfs"
+    "scheduling_policy": "fcfs",
+    "reasoning_parser": "openai_gptoss"
   }
 }

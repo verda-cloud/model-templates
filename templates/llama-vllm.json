@@ -1,6 +1,7 @@
 {
   "engine": "vllm",
   "model": "meta-llama/Llama-3.1-8B-Instruct",
+  "model_mode": "instruct",
   "vllm": {
     "tensor_parallel_size": 2,
     "dtype": "bfloat16",
