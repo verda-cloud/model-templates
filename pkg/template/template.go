@@ -2,6 +2,13 @@ package template
 
 type EngineOption string
 type GPUType string
+type ModelMode string
+
+const (
+	ModelModeThinking ModelMode = "thinking"
+	ModelModeHybrid   ModelMode = "hybrid"
+	ModelModeInstruct ModelMode = "instruct"
+)
 
 const (
 	EngineSGLang EngineOption = "sglang"
@@ -23,6 +30,7 @@ const (
 type Config struct {
 	Engine           EngineOption `json:"engine"`
 	Model            string       `json:"model"`
+	Name             string       `json:"name,omitempty"`
 	Explanation      string       `json:"explanation,omitempty"`
 	ShortExplanation string       `json:"short_explanation,omitempty"`
 
@@ -35,6 +43,7 @@ type Config struct {
 	Seed                   *int           `json:"seed,omitempty"`
 	Tokenizer              *string        `json:"tokenizer,omitempty"`
 	ImageTag               *string        `json:"image_tag,omitempty"`
+	ModelMode              *ModelMode     `json:"model_mode,omitempty"`
 
 	// Container configuration fields (not part of template JSON, used for deployment)
 	// Host specifies the network interface to bind to (default: 0.0.0.0)
@@ -102,6 +111,8 @@ type VLLMConfig struct {
 	MaxNumBatchedTokens *int `json:"max_num_batched_tokens,omitempty"`
 
 	SchedulingPolicy *string `json:"scheduling_policy,omitempty"`
+
+	ReasoningParser *string `json:"reasoning_parser,omitempty"`
 }
 
 // CustomConfig contains custom engine configuration options

@@ -46,6 +46,11 @@ The model identifier or path to load.
 - **Format:** HuggingFace path (e.g., `"meta-llama/Llama-3.1-70B-Instruct"`) or local path
 - **Example:** `"model": "deepseek-ai/DeepSeek-V3.2"`
 
+#### `name` (string, optional)
+Human-readable display title for the template. Used as the selection label when rendering a list of templates for users to choose from.
+- **Use case:** Short, scannable title shown in template pickers and UI
+- **Example:** `"name": "DeepSeek R1 · SGLang · FP8"`
+
 #### `explanation` (string, optional)
 Detailed explanation of the configuration's purpose, use case, and key features.
 - **Use case:** Document the configuration for reference and understanding
@@ -121,6 +126,14 @@ Override the default tokenizer. Used by SGLang and vLLM.
 - **SGLang flag:** `--tokenizer-path`
 - **vLLM flag:** `--tokenizer`
 - **Example:** `"tokenizer": "meta-llama/Llama-3.1-70B-Instruct"`
+
+#### `model_mode` (string, optional)
+Indicates the reasoning capability of the model. Used as metadata for tooling and deployment decisions — not passed as a CLI flag.
+- **Valid values:** `"thinking"`, `"hybrid"`, `"instruct"`
+  - `"thinking"` — model always produces reasoning/chain-of-thought tokens (e.g. DeepSeek-R1, Qwen3 thinking variant)
+  - `"hybrid"` — model can operate in both thinking and non-thinking modes depending on the prompt (e.g. DeepSeek-V3, Qwen3 base)
+  - `"instruct"` — standard instruction-tuned model with no reasoning tokens (e.g. Llama, Mistral)
+- **Example:** `"model_mode": "thinking"`
 
 #### `image_tag` (string, optional)
 Image tag to use for the container image, overriding the default tag.
@@ -364,6 +377,13 @@ Request scheduling policy.
 - **Valid values:** `"fcfs"` (first come first served), `"priority"`
 - **Default:** `"fcfs"`
 - **Example:** `"scheduling_policy": "priority"`
+
+##### `reasoning_parser` (string, optional)
+Parser for extracting reasoning/thinking tokens from model outputs.
+- **Valid values:** `"deepseek_r1"`, `"granite"`, and other vLLM-supported parsers
+- **Use with:** Models that support chain-of-thought reasoning
+- **vLLM flag:** `--reasoning-parser`
+- **Example:** `"reasoning_parser": "deepseek_r1"`
 
 ### Custom Engine Fields
 

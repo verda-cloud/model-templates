@@ -110,6 +110,13 @@
       "type": "string",
       "required": false,
       "description": "Scheduling policy for batch processing (e.g., 'fcfs', 'priority')"
+    },
+    "vllm.reasoning_parser": {
+      "json_path": "vllm.reasoning_parser",
+      "cli_flag": "--reasoning-parser",
+      "type": "string",
+      "required": false,
+      "description": "Parser for extracting reasoning/thinking tokens from model outputs (e.g., 'deepseek_r1', 'granite')"
     }
   }
 }
